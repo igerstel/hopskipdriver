@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  start_address_id: 1
+  dest_address_id: 1
+  commute_dist: 1.5
+  commute_duration: 1.5
+  ride_dist: 1.5
+  ride_duration: 1.5
+  ride_earnings: 1.5
+
+two:
+  start_address_id: 1
+  dest_address_id: 1
+  commute_dist: 1.5
+  commute_duration: 1.5
+  ride_dist: 1.5
+  ride_duration: 1.5
+  ride_earnings: 1.5
