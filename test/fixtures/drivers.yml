@@ -1,7 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  home_address_id: 1
+  home_address: one
+  # home_address: addresses(:one)
 
 two:
-  home_address_id: 1
+  home_address: two
+  # home_address: addresses(:two)

@@ -15,6 +15,7 @@ class DriversController < ApplicationController
 
   # POST /drivers
   def create
+    # requires params[:address_id]
     @driver = Driver.new(driver_params)
 
     if @driver.save

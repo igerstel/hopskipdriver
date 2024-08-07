@@ -3,7 +3,7 @@ namespace :test_data do
   # To populate with Directions API (COSTS MONEY): rails test_data:specific_data\['CALL_API'\]
   desc "Populate specific test data"
   task :specific_data, [:arg1] => :environment do |task, args|
-    # only run in dev and test!
+    # only runnable in dev and test!
     break if !(Rails.env.development? || Rails.env.test?)
 
     # ADDRESSES
@@ -94,10 +94,8 @@ namespace :test_data do
     ).first_or_create
 
     # d1 pickup to boba again
-    r3d1 = Ride.where(driver: d1a1,
-      start_address: a6,
-      dest_address: a3
-    ).first_or_create
+    r3d1 = r2d1.dup
+    r3d1.save
 
     # d1 pickup to westside
     r4d1 = Ride.where(driver: d1a1,
@@ -135,11 +133,14 @@ namespace :test_data do
       dest_address: a9
     ).first_or_create
 
-    # populate with Google Directions API if blank and arg1 passed in
     if args[:arg1] == 'CALL_API'
+      # populate with Google Directions API if blank and arg1 passed in
       [r1d1, r2d1, r3d1, r4d1, r5d1, r6d2, r7d2, r8d2, r9d1].each do |r|
         r.api_directions if r.ride_earnings.blank?
       end
+    else
+      # use values previously calculated to get reasonable data without calling API
+      preset_ride_values(r1d1, r2d1, r3d1, r4d1, r5d1, r6d2, r7d2, r8d2, r9d1)
     end
   end
 
@@ -163,5 +164,74 @@ namespace :test_data do
         r.save
       end
     end
+  end
+
+  # called from test_data:specific_data to avoid making API calls
+  def preset_ride_values(r1, r2, r3, r4, r5, r6, r7, r8, r9)
+    r1.update(
+      commute_dist: 7.1,
+      commute_duration: 0.366,
+      ride_dist: 7.5,
+      ride_duration: 0.359,
+      ride_earnings: 15.83,
+      ride_score: 21.834,
+    )
+    r2.update(
+      commute_dist: 7.1,
+      commute_duration: 0.366,
+      ride_dist: 6.5,
+      ride_duration: 0.328,
+      ride_earnings: 14.3,
+      ride_score: 20.605,
+    )
+    r3.update(
+      commute_dist: 7.1,
+      commute_duration: 0.366,
+      ride_dist: 6.5,
+      ride_duration: 0.328,
+      ride_earnings: 14.3,
+      ride_score: 20.605,
+    )
+    r4.update(
+      commute_dist: 7.1,
+      commute_duration: 0.366,
+      ride_dist: 20.9,
+      ride_duration: 0.569,
+      ride_earnings: 36.07,
+      ride_score: 38.578,
+    )
+    # r5.update()  # r5 has nil ride details
+    r6.update(
+      commute_dist: 0.8,
+      commute_duration: 0.102,
+      ride_dist: 24.5,
+      ride_duration: 0.647,
+      ride_earnings: 41.53,
+      ride_score: 55.447,
+    )
+    r7.update(
+      commute_dist: 0.8,
+      commute_duration: 0.102,
+      ride_dist: 20.6,
+      ride_duration: 0.55,
+      ride_earnings: 35.61,
+      ride_score: 54.617,
+    )
+    r8.update(
+      commute_dist: 20.5,
+      commute_duration: 0.521,
+      ride_dist: 9.3,
+      ride_duration: 0.269,
+      ride_earnings: 18.46,
+      ride_score: 23.367,
+    )
+    r9.update(
+      commute_dist: 1.7,
+      commute_duration: 0.113,
+      ride_dist: 11.1,
+      ride_duration: 0.261,
+      ride_earnings: 21.16,
+      ride_score: 56.578,
+    )
   end
 end

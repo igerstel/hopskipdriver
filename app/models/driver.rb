@@ -4,4 +4,6 @@ class Driver < ApplicationRecord
 
   # Address must exist before Driver
   validates :home_address_id, presence: true
+
+  # FUTURE: hash ids for safety/privacy
 end

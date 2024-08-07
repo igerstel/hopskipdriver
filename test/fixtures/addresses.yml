@@ -11,3 +11,9 @@ two:
   city: MyString
   state: MyString
   zip: MyString
+
+three:
+  street: MyString
+  city: MyString
+  state: MyString
+  zip: MyString

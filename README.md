@@ -10,14 +10,31 @@ NOTE:
 !!!!!! APP SPECS
 
 
+Installation and Setup:
+
+# get code and set up environment
 git clone
 bundle install
 rails db:migrate
 RAILS_ENV=test rails db:migrate
 add .env
+
+# to set up dev testing with current Directions API calls
 rails test_data:specific_data\['CALL_API'\]
+# OR: to set up dev testing earlier saved data from Directions API
+rails test_data:specific_data
+
+# to duplicate records to view pagination
 rails test_data:pagination_data
+
+# start server
+rails s
+
+# testing:
 bin/rails test test/controllers
+bin/rails test test/models
+bin/rails test test/controllers
+bin/rails test test/services
 
 
 
@@ -34,9 +51,8 @@ As a basic first pass, we are assuming that driving times and distances are cons
 
 
 Future ideas and drawbacks:
-
 Location Boxing:
-* In some cases this could be fixed by using the lat/lng coordinates and checking for existing records within, say, 0.0001 (~40 feet).
+* In some cases this could be fixed by using the lat/lng coordinates and checking for existing records within, say, 0.0001 (~40 feet or 0.0068 miles).
 * However, existing barriers (up a cliff, other side of aqueduct, etc) could greatly affect routes even if the distance between places is technically small.
 
 Time Bucketing:

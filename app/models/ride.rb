@@ -13,10 +13,18 @@ class Ride < ApplicationRecord
   FARE_DIST = 1.5    # dollar multiplier for extra distance
   FARE_TIME = 0.7    # dollar multiplier for extra time
 
+  DRIVE_DATA = [:commute_dist, :commute_duration, :ride_dist, :ride_duration, :ride_earnings, :ride_score]
+
+  # FUTURE: hash ids for safety/privacy
+
   # filters out rides that were not run (no distance/duration/earnings/score)
   scope :ran, -> { where('ride_score is not null') }
 
   def api_directions
+    if driver&.home_address.blank?  # should not be possible
+      return { error: "unable to save ride: missing driver data" }
+    end
+
     # Commute trip
     commute_data = DirectionsApi.get_directions(driver.home_address, start_address)
     if commute_data[:error].present?
@@ -51,5 +59,10 @@ class Ride < ApplicationRecord
 
   def score
     return (ride_earnings.to_f / (commute_duration + ride_duration)).round(3)
+  end
+
+  def drive_data_from_existing(existing_ride)
+    # update self.DRIVE_DATA columns to match existing_ride.DRIVE_DATA columns
+    DRIVE_DATA.each{ |d| self.send("#{d}=", existing_ride.send(d)) }
   end
 end
