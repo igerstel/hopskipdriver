@@ -32,12 +32,13 @@ Installation and Setup:
 git clone
 bundle install
 rails db:migrate
-RAILS_ENV=test rails db:migrate
+RAILS_ENV=test rails db:migrate  # may not be necessary?
 add .env
+rails generate rspec:install
 
-# to set up dev testing with current Directions API calls
+# to set up dev env with current Directions API calls
 rails test_data:specific_data\['CALL_API'\]
-# OR: to set up dev testing earlier saved data from Directions API
+# OR: to set up dev env with earlier saved data from Directions API
 rails test_data:specific_data
 
 # to duplicate records to view pagination
@@ -51,6 +52,8 @@ bin/rails test test/controllers
 bin/rails test test/models
 bin/rails test test/controllers
 bin/rails test test/services
+^^^ minitest, remove...
+
 
 
 

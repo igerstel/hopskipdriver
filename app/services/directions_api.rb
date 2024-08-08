@@ -2,9 +2,6 @@ class DirectionsApi
   MAPS_API_KEY = ENV['MAPS_API_KEY']
   BASE_URL = 'https://maps.googleapis.com/maps/api/directions/json'
   SEC_TO_HR = 3600
-  # arbitrary now, but want to limit what can be set
-  MAX_DIST = 300
-  MAX_TIME = 4
 
   # Currently this is assumed to be needed in near-real-time.
   # In the future, could move these calls async and callback/webhook
@@ -38,12 +35,11 @@ class DirectionsApi
       time = min_travel_time(json_resp['routes'])
       dist = min_travel_dist(json_resp['routes'])
     else
-      # no routes, error!
-      return { error: "No routes found for this trip" }
+      return { error: "Error retrieving data: #{json_resp['error_message']}" }
     end
 
     # handle too far away
-    if time > MAX_TIME || dist > MAX_DIST
+    if time > Ride::MAX_TIME || dist > Ride::MAX_DIST
       return { error: "Time or distance is too large for this trip" }
     end
 
@@ -69,6 +65,7 @@ class DirectionsApi
       legs = route['legs']
       values << legs.collect{|l| l[key]}
     end
+
     return values.flatten
   end
 
@@ -76,6 +73,9 @@ class DirectionsApi
   def self.min_travel_dist(json_routes)
     dists = travel_compare(json_routes, 'distance')
 
+    # array of hashes, remove empty hashes
+    dists ||= []
+    dists&.delete_if(&:empty?)
     if dists.count == 0
       return { error: "No distance found for this trip!" }
     end
@@ -83,6 +83,7 @@ class DirectionsApi
     return min_dist(dists)
   end
 
+  # always have dists; caller method checks for emptiness
   def self.min_dist(dists)
     min_dist = Float::INFINITY
     dists.each do |dist|
@@ -94,11 +95,13 @@ class DirectionsApi
     return min_dist  # assumption is if ft ~ 0 miles it's all the same by car
   end
 
-
   # TRAVEL DURATION METHODS
   def self.min_travel_time(json_routes)
     durations = travel_compare(json_routes, 'duration')
 
+    # array of hashes, remove empty hashes
+    durations ||= []
+    durations&.delete_if(&:empty?)
     if durations.count == 0
       return { error: "No travel time found for this trip!" }
     end
@@ -107,6 +110,7 @@ class DirectionsApi
   end
 
   # 'value' is in seconds, find minimum and return fraction of hours
+  # always have times; caller method checks for emptiness
   def self.min_time(times)
     min_time = times.collect{|c| c['value']}.min.to_f
     return min_time/SEC_TO_HR

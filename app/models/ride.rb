@@ -12,6 +12,9 @@ class Ride < ApplicationRecord
   EXTRA_TIME = 0.25  # hours (15 minutes)
   FARE_DIST = 1.5    # dollar multiplier for extra distance
   FARE_TIME = 0.7    # dollar multiplier for extra time
+  # arbitrary now, but want to limit what can be set
+  MAX_DIST = 300
+  MAX_TIME = 4
 
   DRIVE_DATA = [:commute_dist, :commute_duration, :ride_dist, :ride_duration, :ride_earnings, :ride_score]
 
@@ -42,7 +45,7 @@ class Ride < ApplicationRecord
     # Commute trip
     commute_data = DirectionsApi.get_directions(driver.home_address, start_address)
     if commute_data[:error].present?
-      return { error: commute_data[:error] }
+      return { error: "Error calculating commute: #{commute_data[:error]}" }
     end
     self.commute_dist = commute_data[:distance].round(3)
     self.commute_duration = commute_data[:duration].round(3)
@@ -50,7 +53,7 @@ class Ride < ApplicationRecord
     # Ride trip
     ride_data = DirectionsApi.get_directions(start_address, dest_address)
     if ride_data[:error].present?
-      return { error: ride_data[:error] }
+      return { error: "Error calculating ride: #{ride_data[:error]}" }
     end
     self.ride_dist = ride_data[:distance].round(3)
     self.ride_duration = ride_data[:duration].round(3)
@@ -60,18 +63,21 @@ class Ride < ApplicationRecord
     self.ride_score = score
 
     unless save!
-      return { error: "unable to save ride: #{ride.errors.full_messages.join(', ')}" }
+      return { error: "unable to save ride: #{self.errors.full_messages.join(', ')}" }
     end
   end
 
   # float of dollars.cents
   def earnings
+    return nil if ride_dist.blank? || ride_duration.blank?
+
     long_dist = [0, ride_dist - EXTRA_DIST].max  # get distance beyond EXTRA miles (min 0)
     long_time = [0, ride_duration - EXTRA_TIME].max  # get time beyond EXTRA hours (min 0)
     return (12 + FARE_DIST*long_dist + FARE_TIME*long_time).round(2)
   end
 
   def score
+    return nil if commute_duration.blank? || ride_duration.blank?
     return (ride_earnings.to_f / (commute_duration + ride_duration)).round(3)
   end
 
