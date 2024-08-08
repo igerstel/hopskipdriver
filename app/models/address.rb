@@ -10,5 +10,5 @@ class Address < ApplicationRecord
   validates :state, presence: true
   validates :zip, presence: true
 
-  # FUTURE: hash ids for safety/privacy
+  # FUTURE: hash ids for safety/privacy, remove :id from output
 end

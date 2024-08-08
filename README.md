@@ -7,7 +7,23 @@ NOTE:
 
 
 !!!!!! ADD API DOCS
-!!!!!! APP SPECS
+
+
+CREATE ADDRESS
+
+UPDATE ADDRESS
+
+CREATE DRIVER
+
+UPDATE DRIVER
+
+
+CREATE RIDE
+POST:
+
+UPDATE RIDE
+PATCH: localhost:3000/rides/57?ride[dest_address_id]=13
+
 
 
 Installation and Setup:

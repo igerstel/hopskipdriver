@@ -5,5 +5,7 @@ class Driver < ApplicationRecord
   # Address must exist before Driver
   validates :home_address_id, presence: true
 
-  # FUTURE: hash ids for safety/privacy
+  # FUTURE: hash ids for safety/privacy, remove :id from output
+  # FUTURE: may want driver home_address history, if driver moves and
+  #     we need to preserve historic 'commute' data
 end

@@ -27,6 +27,7 @@ class DriversController < ApplicationController
 
   # PATCH/PUT /drivers/1
   def update
+    # FUTURE: do we need a history to preserve archived commute data?
     if @driver.update(driver_params)
       render json: @driver
     else

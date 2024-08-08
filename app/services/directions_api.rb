@@ -6,6 +6,10 @@ class DirectionsApi
   MAX_DIST = 300
   MAX_TIME = 4
 
+  # Currently this is assumed to be needed in near-real-time.
+  # In the future, could move these calls async and callback/webhook
+  # to reduce app load, particularly if the service is slow. (DelayedJob/Resque/Sidekiq)
+
   # addresses come from Address records so they are already validated columnwise
   def self.get_directions(start_addr, dest_addr)
     # safety checks
@@ -23,6 +27,7 @@ class DirectionsApi
       key: MAPS_API_KEY,
       mode: 'driving',
       avoid: 'tolls'
+      # FUTURE: avoid tolls and/or highways?
     }
 
     response = RestClient.get(BASE_URL, { params: params })
@@ -53,7 +58,8 @@ class DirectionsApi
     return "#{a.street},#{a.city},#{a.state},#{a.zip}"
   end
 
-# !!!!!!!!! MAKE ALL THESE PRIVATE?!
+
+  private
 
   # compile set values from array of routes->legs
   # returns [{ 'text': 'xyz', 'value': 123 }, { ... }, ...]

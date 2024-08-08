@@ -8,7 +8,7 @@ class RidesController < ApplicationController
   def index
     # FUTURE: authorization permissions check
     # ./rides or non-positive :driver_id returns 422 - could be before_action
-    return if invalid_param(:driver_id)
+    return if invalid_param?(:driver_id)
 
     # get driver's rides, sort by score, paginate
     @rides = Ride.where(driver_id: params[:driver_id]).ran.order('ride_score desc')
@@ -31,18 +31,7 @@ class RidesController < ApplicationController
     end
 
     @ride = Ride.new(ride_params)
-
-    # FUTURE: allow parsing of given address, instead of just ids
-    existing_ride = Ride.where(start_address_id: ride_params[:start_address_id],
-        dest_address_id: ride_params[:dest_address_id]).ran.last
-
-    # If we have ride to/from same place, use those previously-gathered values
-    if existing_ride.present?
-      @ride.drive_data_from_existing(existing_ride)
-    else
-      # If it's a new to/from pair, pull from Directions API
-      @ride.api_directions
-    end
+    @ride.handle_drive_data(ride_params)
 
     if @ride.save
       render json: @ride, status: :created, location: @ride
@@ -53,6 +42,14 @@ class RidesController < ApplicationController
 
   # PATCH/PUT /rides/1
   def update
+    # FUTURE: logic around when this is allowed
+    if @ride.start_address_id != ride_params[:start_address_id] ||
+         @ride.dest_address_id != ride_params[:dest_address_id] ||
+         @ride.driver_id != ride_params[:driver_id]
+      # could optimize: determine if just ride or commute or both to update.
+      @ride.handle_drive_data(ride_params)
+    end
+
     if @ride.update(ride_params)
       render json: @ride
     else
@@ -76,8 +73,8 @@ class RidesController < ApplicationController
       params.require(:ride).permit(:driver_id, :start_address_id, :dest_address_id)
     end
 
-    def invalid_param(p)
-      return if params[p].to_i > 0
+    def invalid_param?(p)
+      return false if params[p].to_i > 0
 
       render json: { error: 'Unprocessable Entity', message: "Invalid value for #{p}" }, status: :unprocessable_entity
       return true

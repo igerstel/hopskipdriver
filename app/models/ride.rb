@@ -15,10 +15,24 @@ class Ride < ApplicationRecord
 
   DRIVE_DATA = [:commute_dist, :commute_duration, :ride_dist, :ride_duration, :ride_earnings, :ride_score]
 
-  # FUTURE: hash ids for safety/privacy
+  # FUTURE: hash ids for safety/privacy, remove :id from output
 
   # filters out rides that were not run (no distance/duration/earnings/score)
   scope :ran, -> { where('ride_score is not null') }
+
+  def handle_drive_data(ride_params)
+    # FUTURE: allow parsing of given address, instead of just ids
+    existing_ride = Ride.where(start_address_id: ride_params[:start_address_id],
+        dest_address_id: ride_params[:dest_address_id]).ran.last
+
+    # If we have ride to/from same place, use those previously-gathered values
+    if existing_ride.present?
+      self.drive_data_from_existing(existing_ride)
+    else
+      # If it's a new to/from pair, pull from Directions API
+      self.api_directions
+    end
+  end
 
   def api_directions
     if driver&.home_address.blank?  # should not be possible
