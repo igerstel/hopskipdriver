@@ -62,4 +62,5 @@ end
 group :test do
   gem 'webmock', '~> 3.23.1'
   gem 'mocha', '~> 2.4.5'
+  gem 'rspec', '~> 3.13.0'
 end

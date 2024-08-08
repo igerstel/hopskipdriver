@@ -47,6 +47,7 @@ class RidesController < ApplicationController
          @ride.dest_address_id != ride_params[:dest_address_id] ||
          @ride.driver_id != ride_params[:driver_id]
       # could optimize: determine if just ride or commute or both to update.
+      # NOTE: currently addresses are the only params permitted, so it should always update from API/existing.
       @ride.handle_drive_data(ride_params)
     end
 

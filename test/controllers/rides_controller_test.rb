@@ -17,7 +17,7 @@ class RidesControllerTest < ActionDispatch::IntegrationTest
       .to_return(status: 200, body: '{"key": "value"}', headers: {})
   end
 
-  # INDEX
+  # index
   test "should return 422 with no/bad driver_id" do
     get rides_url, as: :json
     assert_equal '{"error":"Unprocessable Entity","message":"Invalid value for driver_id"}', @response.body
@@ -131,7 +131,7 @@ class RidesControllerTest < ActionDispatch::IntegrationTest
     assert page_json == page_output
   end
 
-  # CREATE
+  # create
   test "should not create ride when missing params" do
     assert_no_difference("Ride.count") do
       post rides_url, params: { ride: {
@@ -190,19 +190,21 @@ class RidesControllerTest < ActionDispatch::IntegrationTest
     assert_response :created
   end
 
-  # SHOW
+  # show
   test "should show ride" do
     get ride_url(@ride), as: :json
     assert_response :success
   end
 
-  # UPDATE
-  test "should update ride" do
-    patch ride_url(@ride), params: { ride: { commute_dist: @ride.commute_dist, commute_duration: @ride.commute_duration, dest_address_id: @ride.dest_address_id, ride_dist: @ride.ride_dist, ride_duration: @ride.ride_duration, ride_earnings: @ride.ride_earnings, start_address_id: @ride.start_address_id } }, as: :json
+  # update
+  test "should update ride with API when an id changes" do
+    Ride.any_instance.expects(:handle_drive_data).once
+
+    patch ride_url(@ride), params: { ride: { dest_address_id: @ride.dest_address_id, start_address_id: @ride.start_address_id } }, as: :json
     assert_response :success
   end
 
-  # DELETE
+  # delete
   test "should destroy ride" do
     assert_difference("Ride.count", -1) do
       delete ride_url(@ride), as: :json
