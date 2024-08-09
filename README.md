@@ -10,6 +10,7 @@ NOTE:
 
 
 CREATE ADDRESS
+POST: localhost:3000/addresses?address[street]=123 fake st&address[city]=los angeles&address[state]=ca&address[zip]=91402
 
 UPDATE ADDRESS
 
@@ -48,11 +49,7 @@ rails test_data:pagination_data
 rails s
 
 # testing:
-bin/rails test test/controllers
-bin/rails test test/models
-bin/rails test test/controllers
-bin/rails test test/services
-^^^ minitest, remove...
+rspec spec
 
 
 

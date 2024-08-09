@@ -11,4 +11,5 @@ class Address < ApplicationRecord
   validates :zip, presence: true
 
   # FUTURE: hash ids for safety/privacy, remove :id from output
+  # FUTURE: make uniform capitalization in columns
 end
