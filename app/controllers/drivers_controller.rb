@@ -4,8 +4,9 @@ class DriversController < ApplicationController
   # GET /drivers
   def index
     @drivers = Driver.all
+    pagy, @drivers = pagy(@drivers)
 
-    render json: @drivers
+    render json: { drivers: @drivers, pagination: pagy_output(pagy) }
   end
 
   # GET /drivers/1
@@ -41,7 +42,7 @@ class DriversController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
+
     def set_driver
       @driver = Driver.find(params[:id])
     end

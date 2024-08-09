@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   # exercise: RESTful API endpoint that returns a paginated JSON
   # list of rides in descending score order for a given driver
   resources :drivers do
-    # driver_ride, GET, /drivers/:driver_id/rides/:id, rides#show
+    # driver_ride, GET, /drivers/:driver_id/rides, rides#index
     resources :rides, only: [:index]
   end
 
@@ -11,6 +11,9 @@ Rails.application.routes.draw do
   resources :drivers
   resources :rides
   resources :addresses
+
+  mount Rswag::Ui::Engine => '/api-docs'
+  mount Rswag::Api::Engine => '/api-docs'
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

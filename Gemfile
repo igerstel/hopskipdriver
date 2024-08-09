@@ -20,11 +20,6 @@ gem 'dotenv', '~> 3.1.2'
 # client to make external API requests
 gem 'rest-client', '~> 2.1'
 
-# !!!!!!!!!!!!!!!!!!!!!!!!
-# !!!!!!! swagger? !!!!!!!
-# !!!!!!! postman? !!!!!!!
-# !!!!!!!!!!!!!!!!!!!!!!!!
-
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
 
@@ -54,6 +49,7 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   gem 'rspec-rails', '~> 6.1.3'
   gem 'factory_bot_rails', '~> 6.4.3'
+  gem 'rswag'
 end
 
 group :development do
